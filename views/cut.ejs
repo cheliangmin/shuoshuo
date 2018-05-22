@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="images/favicon.ico">
+
+  <title>shuoshuo -- 设置个人资料</title>
+  <!-- Bootstrap core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="css/jumbotron.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="../css/jquery.Jcrop.css" type="text/css" />
+</head>
+
+<body>
+
+<% include header.ejs%>
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+
+  <div class="container" >
+    <h2>个人资料设置</h2>
+
+    <div class="row">
+      <div class="span12">
+        <div class="jc-demo-box">
+          <img src="upload/<%=upload%>" id="target" alt="[Jcrop Example]" />
+          <div id="preview-pane">
+            <div class="preview-container">
+              <img src="upload/<%=upload%>" class="jcrop-preview" alt="Preview" />
+            </div>
+          </div>
+          <input type="button" id="cut" value="剪切">
+          <div class="clearfix"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<hr>
+
+<footer>
+  <p>&copy; 2016 Company, Inc.</p>
+</footer>
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="../js/jquery.Jcrop.js"></script>
+<script src="../js/aspect_cut.js"></script>
+
+<script>
+  var args = 1;
+  window.onload = function(){
+      var width = $("#target")[0].width;
+      console.log(width);
+      if(width >400){
+          $("#target")[0].style = "width:400px";
+          args = width/400;
+          console.log(args);
+      }
+  };
+
+    $("input").click(function() {
+        /* Act on the event */
+        var w = parseInt($(".jcrop-holder>div:first").css("width"));
+        var h = parseInt($(".jcrop-holder>div:first").css("height"));
+        var x = parseInt($(".jcrop-holder>div:first").css("left"));
+        var y = parseInt($(".jcrop-holder>div:first").css("top"));
+        $.get("/docut",{
+            "w":w * args,
+            "h":h * args,
+            "x":x * args,
+            "y":y * args
+        },function (result) {
+            if(result == "1"){
+                alert("设置头像成功");
+                window.location = "/";
+            }else{
+                alert("设置头像失败");
+            }
+
+        });
+    });
+</script>
+</body>
+</html>

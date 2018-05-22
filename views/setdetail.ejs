@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="images/favicon.ico">
+
+    <title>shuoshuo -- 设置个人资料</title>
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/jumbotron.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/jquery.Jcrop.css" type="text/css" />
+</head>
+
+<body>
+
+<% include header.ejs%>
+
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+
+    <div class="container" >
+        <h2>个人资料设置</h2>
+
+        <div class="row">
+            <form action="/dosetdetail" enctype="multipart/form-data" method="post">
+                <div class="form-group" >
+                    <label for="imgInput" style="cursor:pointer">
+                        <img src="images/selectimg.png" alt="" class="selectimg">
+                    </label>
+
+                    <input type="file" id="imgInput" name="tupian" >
+                </div>
+                <button type="submit" id="submit" class="btn btn-default">上传</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    <hr>
+
+    <footer>
+        <p>&copy; 2016 Company, Inc.</p>
+    </footer>
+</div> <!-- /container -->
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="../js/jquery.Jcrop.js"></script>
+<script src="../js/aspect_cut.js"></script>
+
+<script>
+    $("#imgInput").change(function(){
+        $(".selectimg").attr("src",URL.createObjectURL($(this)[0].files[0]));
+        $(".selectimg").css("width","182px");
+    });
+</script>
+</body>
+</html>
