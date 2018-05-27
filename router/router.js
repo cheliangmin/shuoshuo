@@ -4,7 +4,9 @@ const md5 = require("../models/md5");
 const session = require('express-session');
 const path = require("path");
 const fs = require("fs");
-const gm = require("gm")
+const gm = require("gm");
+const sd = require("silly-datetime");
+
 exports.showIndex = showIndex;
 exports.showRegist = showRegist;
 exports.doRegist = doRegist;
@@ -21,34 +23,46 @@ exports.getUserInfo = getUserInfo;
 exports.getShuoshuoAmount = getShuoshuoAmount;
 
 function showIndex(req,res,next){
-    console.log(req.session.login);
+    console.log("showIndex");
     var login = req.session.login;
     var username = req.session.username;
     var avatar = req.session.avatar;
-    db.find("users",{"username":username},function(err,result){
-        if(err){
-            console.log(err);
-        }
-        if(!login){
-            avatar = "akari.jpg";
-        }else{
-            if(result.length == 0){
-                avatar = "default.png";
-            }else{
-                avatar = result[0].avatar;
+    if(login) {
+        console.log("已经登陆");
+        db.find("users", {"username": username}, function (err, result) {
+            if (err) {
+                console.log(err);
             }
-        }
-        db.find("post",{"username":username},{"sort":{"datetime":-1}},function(err,docs){
-            res.render("index",{
-                "login" : login ? true : false,
-                "username" : login ? username : "",
-                "active" : "首页",
-                "avatar" : avatar,
-                "content" : docs
-            });
-        })
-    });
+            if (!login) {
+                avatar = "akari.jpg";
+            } else {
+                if (result.length == 0) {
+                    avatar = "default.png";
+                } else {
+                    avatar = result[0].avatar;
+                }
+            }
+            db.find("post", {"username": username}, {"sort": {"datetime": -1}}, function (err, docs) {
+                res.render("index", {
+                    "login": login ? true : false,
+                    "username": login ? username : "",
+                    "active": "首页",
+                    "avatar": avatar,
+                    "content": docs
+                });
 
+            });
+        });
+        return;
+    }
+    console.log("未登录");
+    res.render("index", {
+        "login": false,
+        "username": "",
+        "active": "首页",
+        "avatar": "akari.jpg",
+        "content": ""
+    });
 }
 
 function showRegist(req,res,next){
@@ -65,6 +79,7 @@ function showRegist(req,res,next){
 }
 
 function showLogin(req,res,next){
+    console.log("showLogin");
     var login = req.session.login;
     var username = req.session.username;
     var avatar = req.session.avatar;
@@ -78,6 +93,7 @@ function showLogin(req,res,next){
 }
 
 function showLogout(req,res,next){
+    console.log("showLogout");
     var login = req.session.login = false;
     var username = req.session.username = "";
     var avatar = req.session.avatar = "";
@@ -194,14 +210,13 @@ function doRegist(req,res,next){
 }
 
 function doLogin(req,res,next){
-    console.log("登陆");
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields) {
         var username = fields.username;
         var password = fields.password;
 
         password = md5(md5(password) + "lyhcar");
-        console.log(username+"  "+password);
+        //console.log(username+"  "+password);
         db.find("users",{"username":username},function(err,docs){
             if(err){
                 console.log(err);
@@ -296,6 +311,7 @@ function doPost(req,res,next) {
 };
 
 function getAllShuoshuo(req,res,next) {
+    console.log("getAllShuoshuo");
     var page = req.query.page;
     //分页
     var pagesize = 4;
@@ -305,10 +321,15 @@ function getAllShuoshuo(req,res,next) {
             return;
         }
         //console.log(result);
+        for(var i = 0; i < result.length; i++){
+            result[i].datetime = sd.format(result[i].datetime,'YYYY-MM-DD HH:mm:ss');
+        }
         res.json(result);
     })
 }
+
 function getUserInfo(req,res,next) {
+    console.log("getUserInfo");
     var username = req.query.username;
     db.find("users",{"username":username},function(err,result){
         if (err) {
@@ -330,8 +351,8 @@ function getUserInfo(req,res,next) {
 }
 
 function getShuoshuoAmount(req,res,next) {
+    console.log("getShuoshuoAmount");
     db.getAllCount("post",function(result){
-        console.log(result);
         res.json(result);
     })
 }

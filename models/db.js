@@ -11,7 +11,10 @@ exports.updateMany = updateMany;
 exports.getAllCount = getAllCount;
 
 function _connectDB(callback){
+    var d1 = new Date();
     MongoClient.connect(url, function(err, db) {
+        var d2 = new Date();
+        //console.log(parseInt(d2-d1));
         callback(err, db);
     });
 };
