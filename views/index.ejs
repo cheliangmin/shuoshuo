@@ -126,22 +126,33 @@
 <script src="js/bootstrap.min.js"></script>
 <script src="js/underscore_conflict.js"></script>
 <script>
+
+
     $.get("/getshuoshuoamount",function (result) {
+
         //每页多少条内容就除多少，两页就是4，
         var pageamount = Math.ceil(parseInt(result) / 4);
         var compiled = _.template($("#moban_fenye").html());
         for(var i = 0; i < pageamount; i++){
+
             var htmlString = compiled({"page":i});
             $(".pagination").append($(htmlString));
+            if(i == 0){
+                //给第一条按钮高亮显示
+                $(".pagination li").addClass("active");
+            }
         }
         $(".pagination li").click(function(){
             console.log($(this).index());
             getPage($(this).index());
+            //点选的按钮高亮显示，去除其它按钮高亮显示
+            $(this).addClass("active").siblings().removeClass("active");
         })
     });
 
     getPage(0);
     function getPage(page) {
+
         $("#allshuoshuo").html("");
         var compiled = _.template($("#moban").html());
         if ("<%= login %>" == "true") {
