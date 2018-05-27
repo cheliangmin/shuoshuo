@@ -32,4 +32,7 @@ app.get("/cut",router.showCut);
 app.get("/docut",router.doCut);
 app.post("/post",router.doPost);
 
+app.get("/getallshuoshuo",router.getAllShuoshuo);
+app.get("/getuserinfo",router.getUserInfo);
+
 app.listen(3000);

@@ -44,8 +44,8 @@ function find(collectionName,json,args,callback){
         var limit = 0;
         var callback = args;
     }else if(arguments.length == 4){
-        var skipnumber = args.pageamount * args.page || 0;
-        var limit = args.pageamount || 0;
+        var skipnumber = args.pagesize * args.page || 0;
+        var limit = args.pagesize || 0;
         var sort = args.sort || {};
     }else{
         throw new Error("find函数当参数必须为三个或者四个",null);

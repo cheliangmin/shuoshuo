@@ -16,6 +16,8 @@ exports.showDosetdetail = showDosetdetail;
 exports.showCut = showCut;
 exports.doCut = doCut;
 exports.doPost = doPost;
+exports.getAllShuoshuo = getAllShuoshuo;
+exports.getUserInfo = getUserInfo;
 
 function showIndex(req,res,next){
     console.log(req.session.login);
@@ -153,11 +155,9 @@ function showCut(req,res,next){
 
 function doRegist(req,res,next){
     var form = new formidable.IncomingForm();
-
     form.parse(req, function(err, fields) {
         var username = fields.username;
         var password = fields.password;
-
         password = md5(md5(password) + "lyhcar");
         console.log(username+"  "+password);
         db.find("users",{"username":username},function(err,docs){
@@ -184,7 +184,7 @@ function doRegist(req,res,next){
                 }
                 req.session.login = true;
                 req.session.username = username;
-                req.session.avatar = docs[0].avatar || "default.png";
+                req.session.avatar = "default.png";
                 res.send("1");
 
             });
@@ -193,6 +193,7 @@ function doRegist(req,res,next){
 }
 
 function doLogin(req,res,next){
+    console.log("登陆");
     var form = new formidable.IncomingForm();
     form.parse(req, function(err, fields) {
         var username = fields.username;
@@ -290,5 +291,37 @@ function doPost(req,res,next) {
             res.send("1");
             return;
         });
+    })
+};
+
+function getAllShuoshuo(req,res,next) {
+    var page = req.query.page;
+    db.find("post",{},{"pagesize":2,"page":page,"sort":{"datetime":-1}},function(err,result){
+        if (err) {
+            console.log(err);
+            return;
+        }
+        //console.log(result);
+        res.json(result);
+    })
+}
+function getUserInfo(req,res,next) {
+    var username = req.query.username;
+    db.find("users",{"username":username},function(err,result){
+        if (err) {
+            console.log(err);
+            return;
+        }
+        var userinfo = {};
+        if(result.length > 0){
+            userinfo = {
+                "_id":result[0]._id,
+                "username":result[0].username,
+                "registDate":result[0].registDate,
+                "lastLoginDate":result[0].lastLoginDate,
+                "avatar":result[0].avatar
+            };
+        }
+        res.json(userinfo);
     })
 }
