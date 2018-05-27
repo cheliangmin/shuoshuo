@@ -34,5 +34,5 @@ app.post("/post",router.doPost);
 
 app.get("/getallshuoshuo",router.getAllShuoshuo);
 app.get("/getuserinfo",router.getUserInfo);
-
+app.get("/getshuoshuoamount",router.getShuoshuoAmount);
 app.listen(3000);

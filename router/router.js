@@ -18,6 +18,7 @@ exports.doCut = doCut;
 exports.doPost = doPost;
 exports.getAllShuoshuo = getAllShuoshuo;
 exports.getUserInfo = getUserInfo;
+exports.getShuoshuoAmount = getShuoshuoAmount;
 
 function showIndex(req,res,next){
     console.log(req.session.login);
@@ -296,7 +297,9 @@ function doPost(req,res,next) {
 
 function getAllShuoshuo(req,res,next) {
     var page = req.query.page;
-    db.find("post",{},{"pagesize":2,"page":page,"sort":{"datetime":-1}},function(err,result){
+    //分页
+    var pagesize = 4;
+    db.find("post",{},{"pagesize":pagesize,"page":page,"sort":{"datetime":-1}},function(err,result){
         if (err) {
             console.log(err);
             return;
@@ -323,5 +326,12 @@ function getUserInfo(req,res,next) {
             };
         }
         res.json(userinfo);
+    })
+}
+
+function getShuoshuoAmount(req,res,next) {
+    db.getAllCount("post",function(result){
+        console.log(result);
+        res.json(result);
     })
 }

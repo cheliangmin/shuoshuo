@@ -8,6 +8,7 @@ exports.insertOne = insertOne;
 exports.find = find;
 exports.deleteMany = deleteMany;
 exports.updateMany = updateMany;
+exports.getAllCount = getAllCount;
 
 function _connectDB(callback){
     MongoClient.connect(url, function(err, db) {
@@ -95,7 +96,7 @@ function getAllCount(collectionName,callback){
     _connectDB(function(err,client) {
         var db = client.db(dbName);
         var collection = db.collection(collectionName);
-        collection.count({}).then(function(count){
+        collection.count(function(err,count){
             callback(count);
             client.close();
         })

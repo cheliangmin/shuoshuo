@@ -27,6 +27,9 @@
         .alert-danger{
             display: none;
         }
+        .yemiantouxiang{
+            width: 100px;
+        }
     </style>
 </head>
 
@@ -64,7 +67,7 @@
         <%}else{%>
             <div class="row">
                 <div class="col-lg-1">
-                    <img src="avatar/<%=avatar%>" alt="" class="img-circle" >
+                    <img src="avatar/<%=avatar%>" alt="" class="img-circle yemiantouxiang" >
                 </div>
                 <div class="col-lg-offset-2">
                     <%=username%>
@@ -88,6 +91,11 @@
 
 <%if(login){%>
     <div class="container">
+        <nav aria-label="...">
+            <ul class="pagination">
+
+            </ul>
+        </nav>
         <!-- Example row of columns -->
         <div class="row">
             <div id="allshuoshuo"></div>
@@ -102,13 +110,15 @@
 <%}%>
 <script type="text/template" id="moban">
     <div class="col-md-6">
-        <h2><img src="/avatar/{{=avatar}}" alt="" class="img-circle" ></h2>
+        <h2><img src="/avatar/{{=avatar}}" alt="" class="img-circle yemiantouxiang" ></h2>
         <p>作者：{{=username}}  发表时间：{{=datetime}}</p>
         <p>{{=content}}</p>
         <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
     </div>
 </script>
-
+<script type="text/template" id="moban_fenye">
+    <li><a href="#">{{=page}}</a></li>
+</script>
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
@@ -116,25 +126,42 @@
 <script src="js/bootstrap.min.js"></script>
 <script src="js/underscore_conflict.js"></script>
 <script>
-    var compiled = _.template($("#moban").html());
-    console.log(<%=login%>);
-    if("<%=login%>" == "true"){
-        $.get("/getallshuoshuo?page=0",
-            function(shuoshuo) {
-                iterator(0);
-                function iterator(i){
-                    if(i == shuoshuo.length){
-                        return;
+    $.get("/getshuoshuoamount",function (result) {
+        //每页多少条内容就除多少，两页就是4，
+        var pageamount = Math.ceil(parseInt(result) / 4);
+        var compiled = _.template($("#moban_fenye").html());
+        for(var i = 0; i < pageamount; i++){
+            var htmlString = compiled({"page":i});
+            $(".pagination").append($(htmlString));
+        }
+        $(".pagination li").click(function(){
+            console.log($(this).index());
+            getPage($(this).index());
+        })
+    });
+
+    getPage(0);
+    function getPage(page) {
+        $("#allshuoshuo").html("");
+        var compiled = _.template($("#moban").html());
+        if ("<%= login %>" == "true") {
+            $.get("/getallshuoshuo?page=" + page,
+                function (shuoshuo) {
+                    iterator(0);
+                    function iterator(i) {
+                        if (i == shuoshuo.length) {
+                            return;
+                        }
+                        $.get("/getuserinfo?username=" + shuoshuo[i].username, function (userinfo) {
+                            shuoshuo[i].avatar = userinfo.avatar;
+                            console.log(shuoshuo[i]);
+                            var htmlString = compiled(shuoshuo[i]);
+                            $("#allshuoshuo").append($(htmlString));
+                            iterator(i + 1);
+                        });
                     }
-                    $.get("/getuserinfo?username=" + shuoshuo[i].username, function (userinfo) {
-                        shuoshuo[i].avatar = userinfo.avatar;
-                        console.log(shuoshuo[i]);
-                        var htmlString  = compiled(shuoshuo[i]);
-                        $("#allshuoshuo").append($(htmlString));
-                        iterator(i + 1);
-                    });
-                }
-            });
+                });
+        }
     }
 
     $("#fabiao").click(function(){
